@@ -50,8 +50,6 @@ fn post_graphql_handler(
     request.execute(&schema, &context)
 }
 
-infer_schema!("dotenv:DATABASE_URL");
-
 fn main() {
     let query_root = schema::QueryRoot {};
     let mutation_root = schema::MutationRoot {};
