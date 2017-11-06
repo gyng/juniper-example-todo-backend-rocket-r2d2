@@ -12,6 +12,7 @@ extern crate juniper_rocket;
 extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate rocket;
+extern crate rocket_cors;
 
 mod db;
 mod models;
@@ -51,6 +52,14 @@ fn post_graphql_handler(
 }
 
 fn main() {
+    let cors_options = rocket_cors::Cors {
+        allowed_origins: rocket_cors::AllowedOrigins::all(),
+        allowed_methods: vec![rocket::http::Method::Get, rocket::http::Method::Post].into_iter().map(From::from).collect(),
+        allowed_headers: rocket_cors::AllowedHeaders::all(),
+        allow_credentials: false,
+        ..Default::default()
+    };
+
     let query_root = schema::QueryRoot {};
     let mutation_root = schema::MutationRoot {};
 
@@ -69,5 +78,6 @@ fn main() {
             "/",
             routes![graphiql, get_graphql_handler, post_graphql_handler],
         )
+        .attach(cors_options)
         .launch();
 }
