@@ -90,4 +90,20 @@ graphql_object!(MutationRoot: Context |&self| {
                 .get_result::<Todo>(&*connection))))
         }
     }
+
+    field delete_todo(&executor, id: i32)
+    -> FieldResult<Option<i32>> as "delete existing todo"
+
+    {
+        use ::db::todos::dsl;
+
+        let connection = executor.context().pool.clone().get().unwrap();
+        let deleted = jtry!(diesel::delete(dsl::todos.find(id)).execute(&*connection));
+
+        if deleted == 1 {
+            Ok(Some(id))
+        } else {
+            Ok(None)
+        }
+    }
 });
